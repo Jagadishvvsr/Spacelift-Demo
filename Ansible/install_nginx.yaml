@@ -54,9 +54,9 @@
            owner: root
            group: root
        when: ansible_facts['os_family'] == "Debian"
-       notify_handler: 'ServiceNRestart'
+       notify: 'ServiceNRestart'
 
-     - name: configuring index.html file on Debian
+     - name: configuring index.html file on RedHat
        ansible.builtin.copy:
            dest: /usr/share/nginx/html/index.html
            content: |
