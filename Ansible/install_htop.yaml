@@ -13,5 +13,5 @@
     - name: install htop
       ansible.builtin.apt:
            name: htop
-           status: present
+           state: present
           
