@@ -74,6 +74,12 @@ resource "aws_instance" "aws_ec2_tf_spacelift" {
     key_name = aws_key_pair.space_tf_key.key_name
     vpc_security_group_ids = [aws_security_group.spacelift_SG.id]
     associate_public_ip_address = true
+    user_data = <<-EOF
+           #!/usr/bin/env bash
+           sudo apt update
+           sudo apt upgrade -y
+           sudo apt install python3 -y
+        EOF
     tags = {
         Name = each.key
     }
