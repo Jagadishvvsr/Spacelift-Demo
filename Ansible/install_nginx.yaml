@@ -1,0 +1,81 @@
+---
+
+- name: installing and configuring nginx
+  hosts: all
+  become: yes
+
+  pre_tasks:
+     - name: configuring user for ubuntu
+       set_fact:
+          ansible_user: ubuntu
+       when: ansible_facts['os_family'] == "Debian"
+
+     - name:  configuring user for RedHat
+       set_fact:
+           ansible_user: ec2-user
+       when: ansible_facts['os_family'] == "RedHat"
+
+     - name: updating cache for ubuntu
+       ansible.builtin.apt:
+          update_cache: yes
+       when: ansible_facts['os_family'] == "Debian"
+
+     - name: updateing cache for RedHat
+       ansible.builtin.yum:
+          update_cache: yes
+       when: ansible_facts['os_family'] == "RedHat"
+
+  tasks:
+    
+     - name: installing nginx in Debian
+       ansible.builtin.apt:
+           name: nginx
+           state: present
+       when: ansible_facts['os_family'] == "Debian"
+
+     - name: installing nginx in RedHat
+       ansible.builtin.yum:
+            name: nginx
+            state: present
+       when: ansible_facts['os_family'] == "RedHat" 
+
+     - name: configuring index.html file on Debian
+       ansible.builtin.copy:
+           dest: /var/www/html/index.html
+           content: |
+            <!DOCTYPE html>
+            <html>
+            <head><title>Server Details</title></head>
+            <body>
+            <h1>Served from {{ ansible_hostname }}</h1>
+            </body>
+            </html>
+           mode: '0644'
+           owner: root
+           group: root
+       when: ansible_facts['os_family'] == "Debian"
+       notify_handler: 'ServiceNRestart'
+
+     - name: configuring index.html file on Debian
+       ansible.builtin.copy:
+           dest: /usr/share/nginx/html/index.html
+           content: |
+            <!DOCTYPE html>
+            <html>
+            <head><title>Server Details</title></head>
+            <body>
+            <h1>Served from {{ ansible_hostname }}</h1>
+            </body>
+            </html>
+           mode: '0644'
+           owner: root
+           group: root
+       when: ansible_facts['os_family'] == "RedHat"
+       notify_handler: ServiceNRestart
+
+
+  handlers:
+    - name: ServiceNRestart
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
