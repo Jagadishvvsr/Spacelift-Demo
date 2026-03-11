@@ -44,14 +44,7 @@
             name: nginx
             state: started
             enabled: yes
-       when: ansible_facts['os_family'] == "Debian"
-
-     - name: ensure nginx service exists and is running
-       ansible.builtin.service:
-            name: nginx
-            state: started
-            enabled: yes
-       when: ansible_facts['os_family'] == "RedHat"
+       when: not ansible_check_mode
 
 
      - name: configuring index.html file on Debian
@@ -69,7 +62,7 @@
            owner: root
            group: root
        when: ansible_facts['os_family'] == "Debian"
-       notify: 'ServiceNRestart'
+       notify: ServiceNRestart
 
      - name: configuring index.html file on RedHat
        ansible.builtin.copy:
@@ -94,3 +87,4 @@
       ansible.builtin.service:
         name: nginx
         state: restarted
+      when: not ansible_check_mode
