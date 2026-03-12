@@ -55,7 +55,7 @@
             <html>
             <head><title>Server Details</title></head>
             <body>
-            <h1>Served from {{ ansible_hostname }}</h1>
+            <h1>Served from nginx , deployed through Spacelift </h1>
             </body>
             </html>
            mode: '0644'
